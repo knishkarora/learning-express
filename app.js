@@ -1,6 +1,7 @@
 const express = require("express");
 const app = express();
-const userModel = require("./models/user"); 
+const userModel = require("./models/user");
+const bcrypt = require("bcrypt"); 
 const dbConnection = require("./config/db" );
 
 
@@ -15,16 +16,42 @@ app.get("/", (req, res) => {
 })
 app.post("/submit", async (req, res) => {
     const { username, email, password } = req.body;
+    if (!username || !email || !password) {
+        return res.status(400).send("All fields are required");
+    }
+    const existinguser = await userModel.findOne({email:email})
+    if (existinguser) {
+        return res.json({
+            success: false,
+            message: "user already exists"
+        });
+    }
 
+    const hashPassword = await bcrypt.hash(password, 10);
     await userModel.create({
         username: username,
         email: email,
-        password: password
+        password: hashPassword
     });
 
     res.send("Form submitted");
 })
 
+app.get("/updatde-user", async (req, res) => {
+    await userModel.findOneAndUpdate({
+        username: "admin"
+    }, {
+        username: "newAdmin"
+    })
+    res.send("User updated successfully");
+});
+
+app.get("/delete-user", async (req, res) => {
+    await userModel.findOneAndDelet({
+        username: "admin"
+    });
+    res.send("User deleted successfully");
+});
 app.get("/get-users", (req, res) => {
     userModel.find({
         username: "admin"
