@@ -1,6 +1,9 @@
 const express = require("express");
 const app = express();
-const userModal = require("./models/User"); 
+const userModel = require("./models/user"); 
+const dbConnection = require("./config/db" );
+
+
 
 app.set("view engine", "ejs");
 
@@ -10,11 +13,33 @@ app.get("/", (req, res) => {
     res.render("index");
     console.log("Home page accessed");
 })
-app.post("/submit", (req, res) => {
-    console.log(req.body);
+app.post("/submit", async (req, res) => {
+    const { username, email, password } = req.body;
+
+    await userModel.create({
+        username: username,
+        email: email,
+        password: password
+    });
+
     res.send("Form submitted");
 })
 
+app.get("/get-users", (req, res) => {
+    userModel.find({
+        username: "admin"
+    }).then((users) => {
+        res.send(users);
+    })
+})
+
+app.get("/get-user", (req, res) => {
+    userModel.findOne({
+        username: "admin"
+    }).then((users) => {
+        res.send(users);
+    })
+})
 app.get("/about", (req, res) => {
     res.send("about page");
 });
