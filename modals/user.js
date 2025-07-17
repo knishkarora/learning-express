@@ -17,3 +17,5 @@ const userSchema = new mongoose.Schema({
 })
 
 const userModal = mongoose.modelNames("user", userSchema);
+
+module.exports = userModal;

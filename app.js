@@ -1,5 +1,6 @@
 const express = require("express");
 const app = express();
+const userModal = require("./models/User"); 
 
 app.set("view engine", "ejs");
 
